@@ -144,56 +144,56 @@ def _svg(
     )
     top = ranked[:6]
     hidden = max(0, len(ranked) - len(top))
-    row_h = 38
-    height = 486 + (len(top) + (1 if hidden else 0)) * row_h + 34
+    row_h = 32
+    height = 300 + (len(top) + (1 if hidden else 0)) * row_h + 40
     width = 860
-    chart_x, chart_y, chart_w, chart_h = 40, 258, 780, 92
+    chart_x, chart_y, chart_w, chart_h = 40, 176, 780, 48
     bars, recent = _sparkline(days, chart_x, chart_y, chart_w, chart_h)
     start_label = days[0][0][5:] if days else ""
     end_label = days[-1][0][5:] if days else ""
     updated = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 
     rows = []
-    y = 468
+    y = 302
     for index, (full_name, count) in enumerate(top):
         stars = _repo_stars(full_name)
         merged = merged_counts.get(full_name, 0)
         opened = open_counts.get(full_name, 0)
         if index:
-            rows.append(f'<line x1="40" y1="{y - 12}" x2="820" y2="{y - 12}" stroke="{LINE}" stroke-width="1"/>')
+            rows.append(f'<line x1="40" y1="{y - 10}" x2="820" y2="{y - 10}" stroke="{LINE}" stroke-width="1"/>')
         rows.append(
-            f'<text x="40" y="{y + 8}" font-size="15" font-weight="600" fill="{INK}">{html.escape(full_name)}</text>'
+            f'<text x="40" y="{y + 6}" font-size="15" font-weight="600" fill="{INK}">{html.escape(full_name)}</text>'
         )
         detail = f"{merged} merged" + (f" · {opened} open" if opened else "")
         rows.append(
-            f'<text x="700" y="{y + 8}" font-size="13" fill="{MUTED}" text-anchor="end">{detail}</text>'
+            f'<text x="700" y="{y + 6}" font-size="13" fill="{MUTED}" text-anchor="end">{detail}</text>'
         )
         rows.append(
-            f'<text x="820" y="{y + 8}" font-size="13" fill="{MUTED}" text-anchor="end">★ {_fmt_stars(stars)}</text>'
+            f'<text x="820" y="{y + 6}" font-size="13" fill="{MUTED}" text-anchor="end">★ {_fmt_stars(stars)}</text>'
         )
         y += row_h
 
     if hidden:
         rows.append(
-            f'<text x="40" y="{y + 8}" font-size="13" fill="{MUTED}">… 另有 {hidden} 个仓库的 PR</text>'
+            f'<text x="40" y="{y + 6}" font-size="13" fill="{MUTED}">… 另有 {hidden} 个仓库的 PR</text>'
         )
 
     return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img" aria-label="Merged pull requests by {LOGIN}">
   <rect x="0.5" y="0.5" width="{width - 1}" height="{height - 1}" rx="18" fill="{CARD}" stroke="{LINE}"/>
-  <text x="40" y="54" font-size="13" font-weight="700" letter-spacing="2" fill="{PURPLE}" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif">MERGED PULL REQUESTS</text>
-  <text x="820" y="54" font-size="12" fill="#9CA3AF" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif">github.com/{html.escape(LOGIN)}</text>
-  <text x="40" y="170" font-size="104" font-weight="800" fill="{INK}" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif">{merged_total}</text>
-  <text x="40" y="206" font-size="15" fill="{MUTED}" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif">{merged_total} 个 PR 合并 · {open_total} 个待合并 · 近 30 天 +{recent}</text>
-  <line x1="40" y1="232" x2="820" y2="232" stroke="{LINE}" stroke-width="1"/>
+  <text x="40" y="38" font-size="13" font-weight="700" letter-spacing="2" fill="{PURPLE}" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif">MERGED PULL REQUESTS</text>
+  <text x="820" y="38" font-size="12" fill="#9CA3AF" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif">github.com/{html.escape(LOGIN)}</text>
+  <text x="40" y="128" font-size="76" font-weight="800" fill="{INK}" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif">{merged_total}</text>
+  <text x="40" y="154" font-size="14" fill="{MUTED}" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif">{merged_total} 个 PR 合并 · {open_total} 个待合并 · 近 30 天 +{recent}</text>
+  <line x1="40" y1="168" x2="820" y2="168" stroke="{LINE}" stroke-width="1"/>
   {bars}
   <line x1="{chart_x}" y1="{chart_y + chart_h + 8}" x2="{chart_x + chart_w}" y2="{chart_y + chart_h + 8}" stroke="{LINE}" stroke-width="1"/>
-  <text x="{chart_x}" y="{chart_y + chart_h + 28}" font-size="11" fill="#9CA3AF" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif">{html.escape(start_label)}</text>
-  <text x="{chart_x + chart_w}" y="{chart_y + chart_h + 28}" font-size="11" fill="#9CA3AF" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif">{html.escape(end_label)}</text>
-  <line x1="40" y1="414" x2="820" y2="414" stroke="{LINE}" stroke-width="1"/>
+  <text x="{chart_x}" y="{chart_y + chart_h + 20}" font-size="11" fill="#9CA3AF" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif">{html.escape(start_label)}</text>
+  <text x="{chart_x + chart_w}" y="{chart_y + chart_h + 20}" font-size="11" fill="#9CA3AF" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif">{html.escape(end_label)}</text>
+  <line x1="40" y1="274" x2="820" y2="274" stroke="{LINE}" stroke-width="1"/>
   {''.join(rows)}
-  <line x1="40" y1="{height - 34}" x2="820" y2="{height - 34}" stroke="{LINE}" stroke-width="1"/>
-  <text x="40" y="{height - 12}" font-size="11" fill="#9CA3AF" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif">数据来源 GitHub REST API · 每日自动刷新</text>
-  <text x="820" y="{height - 12}" font-size="11" fill="#9CA3AF" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif">更新于 {updated}</text>
+  <line x1="40" y1="{height - 28}" x2="820" y2="{height - 28}" stroke="{LINE}" stroke-width="1"/>
+  <text x="40" y="{height - 10}" font-size="11" fill="#9CA3AF" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif">数据来源 GitHub REST API · 每日自动刷新</text>
+  <text x="820" y="{height - 10}" font-size="11" fill="#9CA3AF" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif">更新于 {updated}</text>
 </svg>
 '''
 
